@@ -1,0 +1,89 @@
+```{r}
+berkleyData <- read.csv('Berkeley.csv')
+berkleyData
+
+by(berkleyData$Admit, berkleyData$Gender, summary)
+
+# plot 2D pie chart
+library(ggplot2)
+f <- sum(as.numeric(berkleyData$Gender=='Female')==TRUE)
+m <- sum(as.numeric(berkleyData$Gender=='Female')==FALSE)
+g <- c(f,m)
+lbls <- c("Female", "Male")
+pie(g, labels = lbls,col=rainbow(length(lbls)),  main="Pie Chart of  1973 UC-Berkeley Graduate School Admission Data")
+
+
+# plot 3D pie chart
+# install.packages("plotrix")
+library(plotrix)
+pie3D(g,labels=lbls,explode=0.1,
+   main="Pie Chart of 1973 UC-Berkeley Graduate School Admission Data")
+
+# Summary shows there are equal number of males and females are admitted and rejected
+```
+
+```{r}
+summary(berkleyData)
+names(berkleyData)
+berkleyData
+
+by(berkleyData$Dept, berkleyData$Gender, summary)
+# this summary shows every department has equal number of males and females
+
+by(berkleyData$Freq, berkleyData$Gender, summary)
+#  this summary shows that the frequency of minimum number of females is less than males
+#  frequency of maximum number of females is less than males
+#  frequency of median number of females is less than males
+
+nlevels(berkleyData$Admit)
+nlevels(berkleyData$Gender)
+num_dept <- nlevels(berkleyData$Dept)
+factor(berkleyData$Admit)
+
+fa <- subset(berkleyData, berkleyData$Admit=='Admitted')
+fr <- subset(berkleyData, berkleyData$Admit=='Rejected')
+
+qplot(x=fa$Freq, data = fa, color = factor(fa$Dept))+
+  facet_wrap(~fa$Gender)
+  
+p1 <- qplot(x=fa$Freq, data = fa)+
+  geom_freqpoly(aes(color = fa$Gender), binwidth=100) 
+
+p2 <- qplot(x=fr$Freq, data = fr)+
+  geom_freqpoly(aes(color = fr$Gender), binwidth=100) 
+
+# arrange plots in grid
+library(gridExtra)
+grid.arrange(p1, p2, ncol=1)
+
+
+# Acceptance boxplot
+p3<-qplot(x=fa$Gender, y =fa$Freq, data = fa, geom ='boxplot')
+
+# Rejected boxplot
+p4<-qplot(x=fr$Gender, y =fr$Freq, data = fr, geom ='boxplot')
+
+grid.arrange(p3, p4, ncol=1)
+
+by(fa$Freq, fa$Gender, summary)
+by(fr$Freq, fr$Gender, summary)
+
+cand_accepted <- sum(fa$Freq)
+cand_rejected <- sum(fr$Freq)
+
+cand_accepted_F <- sum(subset(fa$Freq, fa$Gender=='Female', summary))
+cand_accepted_M <- sum(subset(fa$Freq, fa$Gender=='Male', summary))
+
+cand_rejected_F <- sum(subset(fr$Freq, fr$Gender=='Female', summary))
+cand_rejected_M <- sum(subset(fr$Freq, fr$Gender=='Male', summary))
+
+pie3D(c(cand_accepted_F, cand_accepted_M),labels=lbls,explode=0.1,
+   main="Pie Chart of 1973 UC-Berkeley Graduate School Admission Data")
+
+pie3D(c(cand_rejected_F, cand_rejected_M),labels=lbls,explode=0.1,
+   main="Pie Chart of 1973 UC-Berkeley Graduate School Admission Data")
+
+# I don't agree that UC-Berkeley discriminated against women during the admission process
+
+```
+
